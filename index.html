@@ -6,6 +6,14 @@
     <title>吃飯皇帝大 - 雲端同步版</title>
     <style>
         /* 延用之前的樣式，僅增加讀取動畫 */
+        /* 把這段加在 <style> 標籤內 */
+        h1::before {
+            content: "🍳 "; /* 在標題前面加個可愛的荷包蛋 */
+        }
+
+        .container {
+            border-top: 10px solid #ffbe0b; /* 換一個暖洋洋的早餐黃顏色 */
+        }
         :root { --main-color: #e67e22; --bg-color: #fff9f2; }
         body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg-color); text-align: center; padding: 20px; }
         .container { max-width: 450px; margin: auto; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
@@ -23,6 +31,7 @@
     
     <div id="main-ui" style="display:none;">
         <select id="mood">
+            <option value="breakfast">☕ 早安晨之美 (早餐/早午餐)</option>
             <option value="korean">🌶️ 韓式料理</option>
             <option value="light">🥗 輕食麵食</option>
             <option value="heavy">🥩 飽足大餐</option>
@@ -30,7 +39,7 @@
         </select>
         <button onclick="pickFood()">翻牌子</button>
         <div id="result">
-            <div id="foodName" style="font-size: 22px; font-weight: bold;"></div>
+            <div id="foodName" le="font-size: 22px; font-weight: bold;"></div>
             <p id="foodReason" style="color: #636e72;"></p>
             <a id="mapBtn" target="_blank" style="color: #0984e3; font-weight: bold; text-decoration: none;">📍 地圖開啟</a>
         </div>
@@ -81,3 +90,4 @@
 </script>
 </body>
 </html>
+
