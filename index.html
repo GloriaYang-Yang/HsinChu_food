@@ -61,17 +61,29 @@
         try {
             const response = await fetch(csvUrl);
             const data = await response.text();
-            const rows = data.split('\n').slice(1); // 跳過標題列
+            // 先過濾掉完全空白的行，再進行處理
+            const rows = data.split('\n').filter(row => row.trim() !== '').slice(1); 
             
             cloudDatabase = rows.map(row => {
-                const [category, name, reason] = row.split(',');
-                return { category: category.trim(), name: name.trim(), reason: reason.trim() };
-            });
+                const cols = row.split(',');
+                // 確保至少有 2 個欄位 (category, name)
+                if (cols.length >= 2) {
+                    return { 
+                        category: cols[0] ? cols[0].trim() : '', 
+                        name: cols[1] ? cols[1].trim() : '未命名店名', 
+                        reason: cols[2] ? cols[2].trim() : '在地美食家推薦' 
+                    };
+                }
+                return null;
+            }).filter(item => item !== null); // 移除格式錯誤的行
+
+            if (cloudDatabase.length === 0) throw new Error('No data');
 
             document.getElementById('status').style.display = 'none';
             document.getElementById('main-ui').style.display = 'block';
         } catch (e) {
-            document.getElementById('status').innerText = '御膳房連線失敗，請檢查網址。';
+            console.error(e);
+            document.getElementById('status').innerText = '御膳房連線失敗，請確認試算表已發布為 CSV。';
         }
     }
 
@@ -95,6 +107,7 @@
 </script>
 </body>
 </html>
+
 
 
 
