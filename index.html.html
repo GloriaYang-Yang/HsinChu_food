@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吃飯皇帝大 v2 - 地圖連動版</title>
+    <style>
+        :root { --main-color: #e67e22; --bg-color: #fff9f2; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg-color); text-align: center; padding: 20px; }
+        .container { max-width: 450px; margin: auto; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 2px solid #eee; }
+        h1 { color: var(--main-color); letter-spacing: 2px; }
+        select { width: 100%; padding: 12px; margin: 15px 0; border-radius: 10px; border: 1px solid #ddd; font-size: 16px; }
+        button.btn-pick { background: var(--main-color); color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button.btn-pick:active { transform: scale(0.95); }
+        #result { margin-top: 25px; display: none; padding: 20px; background: #fffcf0; border-radius: 15px; border: 1px solid #ffeaa7; animation: fadeIn 0.5s; }
+        .map-link { display: inline-block; margin-top: 15px; color: #0984e3; text-decoration: none; font-weight: bold; border: 1px solid #0984e3; padding: 8px 15px; border-radius: 8px; font-size: 14px; }
+        .list-btn { margin-top: 20px; display: block; font-size: 13px; color: #636e72; text-decoration: underline; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🤴 吃飯皇帝大</h1>
+    <p>今天想翻哪種類型的牌子？</p>
+
+    <select id="mood">
+        <option value="korean">🌶️ 歐巴上身 (韓式)</option>
+        <option value="light">🥗 胃口小小 (輕食/麵食)</option>
+        <option value="heavy">🥩 餓到吞牛 (燒肉/吃到飽)</option>
+        <option value="fancy">🍷 氣氛要好 (約會/西式)</option>
+    </select>
+
+    <button class="btn-pick" onclick="pickFood()">決定了，就吃這個！</button>
+
+    <div id="result">
+        <div style="font-size: 22px; font-weight: bold;" id="foodName"></div>
+        <p id="foodReason" style="color: #636e72; font-size: 14px; margin: 10px 0;"></p>
+        <a id="mapBtn" class="map-link" target="_blank" href="">📍 在 Google 地圖上查看</a>
+    </div>
+
+    <a class="list-btn" href="https://maps.app.goo.gl/qBXAYDgsVsiGFgeW7" target="_blank">查看微臣的所有口袋名單</a>
+</div>
+
+<script>
+    const database = {
+        korean: [
+            { name: "燒肉滋滋 ZiZi", reason: "竹北超狂韓式烤肉，一定要點那個豬五花！", q: "燒肉滋滋+ZiZi" },
+            { name: "全州正味", reason: "適合全家人分享的部隊鍋，味道很道地。", q: "全州正味+竹北" }
+        ],
+        light: [
+            { name: "十一街麵食館", reason: "新竹老字號，葫蘆麵跟紅油抄手必點。", q: "十一街麵食館+竹北" },
+            { name: "段純貞牛肉麵", reason: "重慶風味香麻帶勁，不想吃太飽吃個麵剛好。", q: "段純貞牛肉麵+竹北" }
+        ],
+        heavy: [
+            { name: "旭集 和食集錦", reason: "頂級日料吃到飽，慶生、聚餐最爽的選擇。", q: "旭集+竹北" },
+            { name: "森森燒肉", reason: "服務超好，肉質優，還有沙拉吧吃到飽。", q: "森森燒肉+竹北" }
+        ],
+        fancy: [
+            { name: "彼刻義式餐酒館", reason: "蟬聯多年地圖高分，炭烤羊排與自製義大利麵超推。", q: "彼刻義式餐酒館" },
+            { name: "The One 南園", reason: "如果要更有儀式感，去南園來個午宴吧。", q: "南園+新竹" }
+        ]
+    };
+
+    function pickFood() {
+        const mood = document.getElementById('mood').value;
+        const choices = database[mood];
+        const res = choices[Math.floor(Math.random() * choices.length)];
+
+        document.getElementById('foodName').innerText = res.name;
+        document.getElementById('foodReason').innerText = res.reason;
+        
+        // 核心功能：生成 Google Maps 搜尋連結
+        document.getElementById('mapBtn').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(res.q)}`;
+        
+        document.getElementById('result').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
