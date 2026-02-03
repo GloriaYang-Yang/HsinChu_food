@@ -18,7 +18,11 @@
         body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg-color); text-align: center; padding: 20px; }
         .container { max-width: 450px; margin: auto; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
         select, button { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; font-size: 16px; border: 1px solid #ddd; }
-        button { background: var(--main-color); color: white; border: none; font-weight: bold; cursor: pointer; }
+        button {
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+            box-shadow: 0 4px 15px rgba(211, 84, 0, 0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
         #result { margin-top: 25px; display: none; padding: 20px; background: #fffcf0; border-radius: 15px; border: 1px solid #ffeaa7; }
         .loading { color: #999; font-style: italic; }
     </style>
@@ -36,6 +40,7 @@
             <option value="light">🥗 輕食麵食</option>
             <option value="heavy">🥩 飽足大餐</option>
             <option value="fancy">🍷 質感氣氛</option>
+            <option value="local">🍚 在地吃粗飽 (高CP值/大份量)</option>
         </select>
         <button onclick="pickFood()">翻牌子</button>
         <div id="result">
@@ -90,4 +95,5 @@
 </script>
 </body>
 </html>
+
 
