@@ -104,9 +104,89 @@
     }
 
     init();
+    function openForm() {
+        document.getElementById('formModal').style.display = 'flex';
+        // 每次開啟時重新讀取 iframe，確保看到最新表單
+        const iframe = document.getElementById('googleFormIframe');
+        iframe.src = iframe.src; 
+    }
+    
+    function closeForm() {
+        document.getElementById('formModal').style.display = 'none';
+    }
+    
+    // 點擊彈窗外部也可以關閉 (貼心功能)
+    window.onclick = function(event) {
+        const modal = document.getElementById('formModal');
+        if (event.target == modal) {
+            closeForm();
+        }
+    }
 </script>
+<button onclick="openForm()" id="floatingBtn" title="我要薦餐">➕</button>
+
+<div id="formModal" class="modal-overlay">
+    <div class="modal-content">
+        <span onclick="closeForm()" class="close-btn">&times;</span>
+        <h3 style="margin-top:0; color:#bc6c25;">🤴 奏報新美食</h3>
+        <p style="font-size:12px; color:#666;">在 Threads 看到好料？快呈上來給朕瞧瞧！</p>
+        
+        <iframe 
+            id="googleFormIframe"
+            src="https://docs.google.com/forms/d/e/您的表單ID/viewform?embedded=true" 
+            width="100%" 
+            height="450" 
+            frameborder="0" 
+            marginheight="0" 
+            marginwidth="0">載入中…</iframe>
+    </div>
+</div>
+
+<style>
+    /* 懸浮按鈕樣式 */
+    #floatingBtn {
+        position: fixed; bottom: 25px; right: 25px;
+        width: 60px; height: 60px;
+        background: #000; color: #fff;
+        border: none; border-radius: 50%;
+        font-size: 30px; cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 1000; transition: 0.3s;
+    }
+    #floatingBtn:hover { transform: scale(1.1) rotate(90deg); }
+
+    /* 彈窗遮罩：半透明背景 */
+    .modal-overlay {
+        display: none; position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(5px); /* 背景模糊感 */
+        z-index: 2000; align-items: center; justify-content: center;
+    }
+
+    /* 彈窗主體 */
+    .modal-content {
+        background: white; padding: 25px;
+        border-radius: 20px; width: 90%; max-width: 450px;
+        position: relative; animation: slideUp 0.4s ease-out;
+    }
+
+    /* 關閉按鈕 */
+    .close-btn {
+        position: absolute; top: 15px; right: 20px;
+        font-size: 28px; cursor: pointer; color: #999;
+    }
+
+    /* 彈窗動畫 */
+    @keyframes slideUp {
+        from { transform: translateY(50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+</style>
+    
 </body>
 </html>
+
 
 
 
