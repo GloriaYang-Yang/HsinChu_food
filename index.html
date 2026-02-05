@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吃飯皇帝大 - 雲端同步版</title>
+    <style>
+        :root { --main-color: #e67e22; --bg-color: #fcf8e8; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg-color); text-align: center; padding: 20px; color: #333; }
+        .container { max-width: 450px; margin: auto; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 4px solid #d4a373; }
+        h1 { color: #bc6c25; margin-bottom: 10px; }
+        select, button { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; font-size: 16px; border: 1px solid #ddd; }
+        button { background: var(--main-color); color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #606c38; }
+        #result { margin-top: 25px; display: none; padding: 20px; background: #fffcf0; border-radius: 15px; border: 2px dashed #dda15e; }
+        .loading { color: #999; font-style: italic; }
+        
+        /* 彈窗樣式 */
+        #floatingBtn { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background: #000; color: #fff; border: none; border-radius: 50%; font-size: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 20px; width: 90%; max-width: 450px; position: relative; }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 28px; cursor: pointer; color: #999; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🤴 吃飯皇帝大</h1>
+    <div id="status" class="loading">正在向御膳房調閱清單...</div>
+    
+    <div id="main-ui" style="display:none;">
+        <select id="mood">
+            <option value="breakfast">☕ 早安晨之美</option>
+            <option value="korean">🌶️ 歐巴上身</option>
+            <option value="light">🥗 胃口小小</option>
+            <option value="heavy">🥩 餓到吞牛</option>
+            <option value="fancy">🍷 氣氛要好</option>
+            <option value="full">🍚 在地吃粗飽</option>
+        </select>
+        <button onclick="pickFood()">翻牌子</button>
+        <div id="result">
+            <div id="foodName" style="font-size: 22px; font-weight: bold; color: #283618;"></div>
+            <p id="foodReason" style="color: #606c38; font-style: italic; margin: 10px 0;"></p>
+            <a id="mapBtn" target="_blank" style="display: inline-block; margin-top: 10px; color: #0984e3; font-weight: bold; text-decoration: none; border: 1px solid #0984e3; padding: 5px 15px; border-radius: 8px;">📍 地圖開啟</a>
+        </div>
+    </div>
+</div>
+
+<button onclick="openForm()" id="floatingBtn">➕</button>
+
+<div id="formModal" class="modal-overlay">
+    <div class="modal-content">
+        <span onclick="closeForm()" class="close-btn">&times;</span>
+        <h3 style="margin-top:0; color:#bc6c25;">🤴 奏報新美食</h3>
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdNKzVxSQZxUXlNBOBQKL-K2GO_PAX-omNsShEVyG_dad9E9A/viewform?embedded=true" width="100%" height="400" frameborder="0">載入中…</iframe>
+    </div>
+</div>
+
+<script>
+    // ⚠️ 請確保這串網址最後是 output=csv
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1a-YS-sVsEOoP-K5efI4VzueDPRLXNhe4Xl_Lrg1asd2ovmTF--E1oiJYiWQOkeChrpkWQuMQ4v_r/pub?output=csv'; 
+    let cloudDatabase = [];
+
+    async function init() {
+        try {
+            const response = await fetch(csvUrl);
+            const data = await response.text();
+            const rows = data.split('\n').filter(row => row.trim() !== '').slice(1);
+            
+            cloudDatabase = rows.map(row => {
+                const cols = row.split(',');
+                if (cols.length >= 2) {
+                    return { 
+                        category: cols[0].trim(), 
+                        name: cols[1].trim(), 
+                        reason: cols[2] ? cols[2].trim() : '在地美食家推薦' 
+                    };
+                }
+                return null;
+            }).filter(item => item !== null);
+
+            document.getElementById('status').style.display = 'none';
+            document.getElementById('main-ui').style.display = 'block';
+        } catch (e) {
+            document.getElementById('status').innerText = '御膳房連線失敗，請檢查試算表發布設定。';
+        }
+    }
+
+    function pickFood() {
+        const mood = document.getElementById('mood').value;
+        const choices = cloudDatabase.filter(item => item.category === mood);
+        
+        if (choices.length === 0) {
+            alert('這個分類目前沒名單喔，快按右下角推薦！');
+            return;
+        }
+
+        const res = choices[Math.floor(Math.random() * choices.length)];
+        document.getElementById('foodName').innerText = "💡 推薦吃： " + res.name;
+        document.getElementById('foodReason').innerText = "「" + res.reason + "」";
+        document.getElementById('mapBtn').href = `https://www.google.com/maps/search/${encodeURIComponent(res.name + ' 竹北')}`;
+        document.getElementById('result').style.display = 'block';
+    }
+
+    function openForm() { document.getElementById('formModal').style.display = 'flex'; }
+    function closeForm() { document.getElementById('formModal').style.display = 'none'; }
+    window.onclick = function(e) { if (e.target.className == 'modal-overlay') closeForm(); }
+
+    init();
+</script>
+</body>
+</html>
